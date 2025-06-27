@@ -1,0 +1,129 @@
+# إنشاء نسخة مبسطة من موقع "توفير" بصيغة HTML تعمل محليًا 100%
+html_code = """
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>توفير - tawfeer</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #fdfdfd;
+      color: #222;
+      margin: 0;
+      padding: 20px;
+      direction: rtl;
+      text-align: right;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    h1 {
+      color: #2e7d32;
+    }
+    .section {
+      margin-bottom: 25px;
+      background: #ffffff;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    label {
+      display: block;
+      margin: 8px 0 4px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #d84315;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>توفير – ميزانيتك تحت سيطرتك</h1>
+  </header>
+
+  <div class="section">
+    <label for="income">الدخل الشهري:</label>
+    <input type="number" id="income" placeholder="مثال: 10000">
+
+    <label for="extraIncome">دخل إضافي:</label>
+    <input type="number" id="extraIncome" placeholder="مثال: 1500">
+  </div>
+
+  <div class="section">
+    <label for="expenses">إجمالي المصروفات:</label>
+    <input type="number" id="expenses" placeholder="مثال: 7000">
+  </div>
+
+  <div class="section">
+    <button onclick="calculate()">احسب الفائض / العجز</button>
+    <div id="result"></div>
+  </div>
+
+  <footer>
+    Tawfeer.app © 2025 – جميع الحقوق محفوظة
+  </footer>
+
+  <script>
+    function calculate() {
+      const income = parseFloat(document.getElementById("income").value) || 0;
+      const extra = parseFloat(document.getElementById("extraIncome").value) || 0;
+      const expenses = parseFloat(document.getElementById("expenses").value) || 0;
+      const totalIncome = income + extra;
+      const surplus = totalIncome - expenses;
+      let message = "الفائض: " + surplus + " ريال قطري";
+      if (surplus < 0) {
+        message = "عجز: " + Math.abs(surplus) + " ريال قطري";
+      }
+      document.getElementById("result").innerText = message;
+    }
+  </script>
+</body>
+</html>
+"""
+
+# حفظ الملف داخل ملف مضغوط
+import os
+from zipfile import ZipFile
+
+site_folder = "/mnt/data/tawfeer_final_site"
+os.makedirs(site_folder, exist_ok=True)
+
+html_path = os.path.join(site_folder, "index.html")
+with open(html_path, "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+# ضغط الملف
+zip_file_path = "/mnt/data/tawfeer_final.zip"
+with ZipFile(zip_file_path, "w") as zipf:
+    zipf.write(html_path, arcname="index.html")
+
+zip_file_path
