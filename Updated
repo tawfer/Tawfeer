@@ -1,0 +1,193 @@
+from zipfile import ZipFile
+import os
+
+# HTML for the new version of Tawfeer with multi-language and more pages
+html_code = '''
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>توفير – Tawfeer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #fdfdfd;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #4caf50;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: space-around;
+      background-color: #eee;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .lang-switch {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .lang-switch button {
+      margin: 0 5px;
+      padding: 5px 10px;
+    }
+    main {
+      padding: 2rem;
+    }
+    section {
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 1rem;
+    }
+    button.calculate {
+      background: #4caf50;
+      color: white;
+      padding: 10px;
+      border: none;
+      width: 100%;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.8rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 id="site-title">توفير – ميزانيتك تحت سيطرتك</h1>
+  </header>
+
+  <div class="lang-switch">
+    <button onclick="setLang('ar')">العربية</button>
+    <button onclick="setLang('en')">English</button>
+  </div>
+
+  <nav>
+    <a href="#" onclick="showSection('budget')">الميزانية</a>
+    <a href="#" onclick="showSection('goals')">أهداف</a>
+    <a href="#" onclick="showSection('report')">تقرير</a>
+    <a href="#" onclick="showSection('debts')">الديون</a>
+    <a href="#" onclick="showSection('settings')">الإعدادات</a>
+  </nav>
+
+  <main>
+    <section id="budget" class="active">
+      <label for="income" id="income-label">الدخل الشهري:</label>
+      <input type="number" id="income">
+
+      <label for="extra" id="extra-label">دخل إضافي:</label>
+      <input type="number" id="extra">
+
+      <label for="expenses" id="expenses-label">إجمالي المصروفات:</label>
+      <input type="number" id="expenses">
+
+      <button class="calculate" onclick="calculate()">احسب الفائض / العجز</button>
+      <div class="result" id="result"></div>
+    </section>
+
+    <section id="goals">
+      <p>صفحة لتسجيل وتتبع الأهداف المالية (تحت التطوير).</p>
+    </section>
+
+    <section id="report">
+      <p>صفحة لتوليد التقارير وتحميلها بصيغة PDF (تحت التطوير).</p>
+    </section>
+
+    <section id="debts">
+      <p>صفحة لإضافة وتتبع الديون والالتزامات (تحت التطوير).</p>
+    </section>
+
+    <section id="settings">
+      <p>صفحة لإعدادات اللغة والعملة (تحت التطوير).</p>
+    </section>
+  </main>
+
+  <footer>جميع الحقوق محفوظة – Tawfeer.app © 2025</footer>
+
+  <script>
+    function showSection(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function calculate() {
+      const income = Number(document.getElementById('income').value) || 0;
+      const extra = Number(document.getElementById('extra').value) || 0;
+      const expenses = Number(document.getElementById('expenses').value) || 0;
+      const total = income + extra - expenses;
+      const result = document.getElementById('result');
+      if (total >= 0) {
+        result.innerHTML = `فائض: ${total.toLocaleString()} ريال قطري`;
+        result.style.color = 'green';
+      } else {
+        result.innerHTML = `عجز: ${Math.abs(total).toLocaleString()} ريال قطري`;
+        result.style.color = 'red';
+      }
+    }
+
+    function setLang(lang) {
+      if (lang === 'en') {
+        document.documentElement.lang = 'en';
+        document.documentElement.dir = 'ltr';
+        document.getElementById('site-title').textContent = 'Tawfeer – Your Budget, Under Control';
+        document.querySelector('label[for="income"]').textContent = 'Monthly Income:';
+        document.querySelector('label[for="extra"]').textContent = 'Additional Income:';
+        document.querySelector('label[for="expenses"]').textContent = 'Total Expenses:';
+        document.querySelector('.calculate').textContent = 'Calculate Surplus / Deficit';
+      } else {
+        document.documentElement.lang = 'ar';
+        document.documentElement.dir = 'rtl';
+        document.getElementById('site-title').textContent = 'توفير – ميزانيتك تحت سيطرتك';
+        document.querySelector('label[for="income"]').textContent = 'الدخل الشهري:';
+        document.querySelector('label[for="extra"]').textContent = 'دخل إضافي:';
+        document.querySelector('label[for="expenses"]').textContent = 'إجمالي المصروفات:';
+        document.querySelector('.calculate').textContent = 'احسب الفائض / العجز';
+      }
+    }
+  </script>
+</body>
+</html>
+'''
+
+# Save HTML file and zip it
+site_folder = "/mnt/data/tawfeer_multi_site"
+os.makedirs(site_folder, exist_ok=True)
+html_path = os.path.join(site_folder, "index.html")
+with open(html_path, "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+zip_path = "/mnt/data/tawfeer_multi.zip"
+with ZipFile(zip_path, "w") as zipf:
+    zipf.write(html_path, arcname="index.html")
+
+zip_path
